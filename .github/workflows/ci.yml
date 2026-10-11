@@ -114,7 +114,7 @@ jobs:
       - name: Playwright smoke tests
         run: |
           docker run --rm --network datarescue_frontend -e E2E_BASE_URL=http://frontend \
-            -v "$PWD/frontend:/work" -w /work mcr.microsoft.com/playwright:v1.49.1-noble \
+            -v "$PWD/frontend:/work" -w /work mcr.microsoft.com/playwright:v1.64.0-noble \
             sh -c "npm ci && npx playwright test"
       - name: Logs on failure
         if: failure()

@@ -6,7 +6,7 @@ TEST    := $(COMPOSE) --profile test run --rm -T tests
 NODE    := docker run --rm -v "$(CURDIR)/frontend:/app" -w /app node:22-alpine
 DEV     := docker run --rm -v "$(CURDIR):/repo" -w /repo datarescue-backend:dev
 PW      := docker run --rm --network $(PROJECT)_frontend -e E2E_BASE_URL=http://frontend \
-             -v "$(CURDIR)/frontend:/work" -w /work mcr.microsoft.com/playwright:v1.49.1-noble
+             -v "$(CURDIR)/frontend:/work" -w /work mcr.microsoft.com/playwright:v1.64.0-noble
 
 .DEFAULT_GOAL := help
 .PHONY: help setup up down reset seed migrate test test-backend test-frontend e2e demo demo-chaos \
@@ -52,7 +52,7 @@ test-frontend: ## ESLint, TypeScript and production build
 	$(NODE) sh -c "npm ci --no-audit --no-fund --loglevel=error && npm run lint && npm run typecheck && npm run build"
 
 e2e: ## Playwright UI smoke tests against the running stack (`make up` first)
-	$(PW) npx playwright test
+	$(PW) sh -c "npm ci --no-audit --no-fund --loglevel=error && npx playwright test"
 
 demo: ## Scripted failure -> diagnosis -> approval -> recovery walkthrough via the API
 	$(COMPOSE) run --rm --no-deps -T api python scripts/demo_scenario.py --api http://api:8000

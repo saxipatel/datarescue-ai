@@ -9,31 +9,31 @@ sources:
         description: Validated rows. One row per event_id (database-enforced).
         columns:
           - name: event_id
-            tests: [unique, not_null]
+            data_tests: [unique, not_null]
           - name: transaction_id
-            tests: [not_null]
+            data_tests: [not_null]
           - name: customer_id
-            tests: [not_null]
+            data_tests: [not_null]
           - name: merchant_id
-            tests: [not_null]
+            data_tests: [not_null]
           - name: amount
-            tests: [not_null]
+            data_tests: [not_null]
           - name: currency
-            tests:
+            data_tests:
               - not_null
               - accepted_values:
                   values: "{{ var('allowed_currencies') }}"
           - name: status
-            tests:
+            data_tests:
               - accepted_values:
                   values: ["PENDING", "SETTLED", "FAILED", "REFUNDED"]
           - name: source_id
-            tests:
+            data_tests:
               - relationships:
                   to: source('datarescue', 'source_systems')
                   field: id
           - name: batch_id
-            tests:
+            data_tests:
               - relationships:
                   to: source('datarescue', 'ingestion_batches')
                   field: id
