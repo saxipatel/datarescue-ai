@@ -25,7 +25,7 @@ Legend: **done** = implemented and verified · **partial** = works with a stated
 | A11 | Crash during replay | done | `test_crash_mid_replay_then_retry_with_same_key`: job left RUNNING, retry → attempts 2, rows written == dry run, 0 duplicate IDs. Live `make demo-chaos` on the RQ worker: 1,431 predicted, 1,431 written. Benchmark repeats this at 1k, 10k and 100k. |
 | A12 | Audit trail | done | Actor, role, action, entity, before/after hashes, correlation ID. Clean-run audit contained login, batch, incident, proposal, dry-run, approval, recovery (including chaos and retry) and simulation events. The append-only trigger is tested. |
 | A13 | UI workflow | done | Playwright `demo.spec.ts` (engineer injects → incident → propose → dry run → steward approves → execute → verification → same-key resubmit → incident resolved) passed against the clean stack. |
-| A14 | CI / tests | done (local) | All suites below pass locally. `.github/workflows/ci.yml` mirrors them and passes `actionlint` 1.7.4; it has not run on GitHub yet because the repository has not been pushed. |
+| A14 | CI / tests | done | GitHub Actions run [38141819042](https://github.com/saxipatel/datarescue-ai/actions/runs/38141819042) (2026-10-11) passed all four jobs: backend (ruff, mypy, migrations up/down/up, 172 tests, 89% coverage), dbt (23/23), frontend (lint, typecheck, build) and e2e (full Docker stack, chaos demo, 3 Playwright tests). The first run failed because Alembic could not import the app without `PYTHONPATH`; fixed with `prepend_sys_path` in `alembic.ini`. |
 | A15 | Documentation | done | README, docs/architecture.md, data_contracts.md, api.md, runbook.md, security.md, 5 ADRs. |
 
 ## Verification commands and results (clean-clone run)

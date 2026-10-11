@@ -1,5 +1,7 @@
 # DataRescue
 
+[![CI](https://github.com/saxipatel/datarescue-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/saxipatel/datarescue-ai/actions/workflows/ci.yml)
+
 A data reliability control plane for batch transaction pipelines. It validates incoming
 events against a contract, quarantines bad rows without losing them, opens incidents when
 quality rules breach their thresholds, explains the likely cause from evidence, traces the
@@ -306,6 +308,10 @@ make test         # backend pytest + frontend lint, typecheck, build
 make lint         # ruff, ruff format --check, mypy, eslint, tsc
 make e2e          # Playwright smoke tests against the running stack
 ```
+
+Every push runs the same checks in GitHub Actions ([workflow](.github/workflows/ci.yml)):
+backend lint, types, migrations and tests; dbt; frontend; and an end-to-end job that starts
+the full Docker stack, runs the chaos demo and the Playwright tests.
 
 Results from the last local run (2026-10-10, Apple M4, Docker Desktop):
 
