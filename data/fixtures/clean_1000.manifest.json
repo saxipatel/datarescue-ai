@@ -1,0 +1,23 @@
+{
+  "format": "jsonl",
+  "params": {
+    "source_name": "payments_core",
+    "records": 1000,
+    "seed": 42,
+    "scenario": "clean",
+    "corruption_pct": 0,
+    "anchor": "2026-01-05T12:00:00+00:00",
+    "span_minutes": 60,
+    "schema_version": 1,
+    "prior_payload_count": 0
+  },
+  "expected": {
+    "received": 1000,
+    "accepted": 1000,
+    "late_warnings": 0,
+    "quarantined": 0,
+    "skipped": 0,
+    "faults": {}
+  },
+  "labels_truncated": false
+}

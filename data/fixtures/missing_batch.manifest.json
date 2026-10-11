@@ -1,0 +1,13 @@
+{
+  "description": "Ingest seq1 then seq3 with sequence_number set; seq 2 is missing.",
+  "files": [
+    "missing_batch_seq1.jsonl",
+    "missing_batch_seq3.jsonl"
+  ],
+  "expected": {
+    "incident_rule": "completeness",
+    "missing_sequences": [
+      2
+    ]
+  }
+}

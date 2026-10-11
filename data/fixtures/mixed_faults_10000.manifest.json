@@ -1,0 +1,36 @@
+{
+  "format": "jsonl",
+  "params": {
+    "source_name": "payments_core",
+    "records": 10000,
+    "seed": 42,
+    "scenario": "mixed_faults",
+    "corruption_pct": 10,
+    "anchor": "2026-01-05T12:00:00+00:00",
+    "span_minutes": 60,
+    "schema_version": 1,
+    "prior_payload_count": 0
+  },
+  "expected": {
+    "received": 10000,
+    "accepted": 9079,
+    "late_warnings": 79,
+    "quarantined": 844,
+    "skipped": 77,
+    "faults": {
+      "corrupted_payload": 81,
+      "missing_field": 85,
+      "currency_invalid": 85,
+      "duplicate_conflict": 87,
+      "unexpected_field": 88,
+      "late_event": 79,
+      "duplicate_identical": 77,
+      "impossible_timestamp": 94,
+      "negative_amount": 89,
+      "currency_lowercase": 82,
+      "unknown_status": 89,
+      "null_customer_id": 64
+    }
+  },
+  "labels_truncated": false
+}

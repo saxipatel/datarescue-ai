@@ -1,0 +1,41 @@
+version: 2
+
+sources:
+  - name: datarescue
+    description: Operational tables written by the ingestion engine.
+    schema: public
+    tables:
+      - name: accepted_transactions
+        description: Validated rows. One row per event_id (database-enforced).
+        columns:
+          - name: event_id
+            tests: [unique, not_null]
+          - name: transaction_id
+            tests: [not_null]
+          - name: customer_id
+            tests: [not_null]
+          - name: merchant_id
+            tests: [not_null]
+          - name: amount
+            tests: [not_null]
+          - name: currency
+            tests:
+              - not_null
+              - accepted_values:
+                  values: "{{ var('allowed_currencies') }}"
+          - name: status
+            tests:
+              - accepted_values:
+                  values: ["PENDING", "SETTLED", "FAILED", "REFUNDED"]
+          - name: source_id
+            tests:
+              - relationships:
+                  to: source('datarescue', 'source_systems')
+                  field: id
+          - name: batch_id
+            tests:
+              - relationships:
+                  to: source('datarescue', 'ingestion_batches')
+                  field: id
+      - name: source_systems
+      - name: ingestion_batches

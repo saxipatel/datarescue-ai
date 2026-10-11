@@ -1,0 +1,35 @@
+{
+  "format": "csv",
+  "params": {
+    "source_name": "payments_core",
+    "records": 100,
+    "seed": 7,
+    "scenario": "mixed_faults",
+    "corruption_pct": 15,
+    "anchor": "2026-01-05T12:00:00+00:00",
+    "span_minutes": 60,
+    "schema_version": 1,
+    "prior_payload_count": 0
+  },
+  "expected": {
+    "received": 100,
+    "accepted": 86,
+    "late_warnings": 1,
+    "quarantined": 12,
+    "skipped": 2,
+    "faults": {
+      "currency_invalid": 2,
+      "duplicate_identical": 2,
+      "duplicate_conflict": 2,
+      "impossible_timestamp": 1,
+      "null_customer_id": 1,
+      "unexpected_field": 1,
+      "corrupted_payload": 2,
+      "unknown_status": 1,
+      "currency_lowercase": 1,
+      "late_event": 1,
+      "negative_amount": 1
+    }
+  },
+  "labels_truncated": false
+}

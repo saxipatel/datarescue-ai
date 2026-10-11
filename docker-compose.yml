@@ -1,0 +1,209 @@
+name: datarescue
+
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: backend/Dockerfile
+    target: runtime
+  image: datarescue-backend:local
+  env_file:
+    - path: .env
+      required: false
+  environment: &backend-env
+    DATABASE_URL: postgresql+psycopg://datarescue:datarescue@postgres:5432/datarescue
+    REDIS_URL: redis://redis:6379/0
+    DATA_DIR: /data
+  volumes:
+    - appdata:/data
+  networks: [backend]
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: datarescue
+      POSTGRES_PASSWORD: datarescue
+      POSTGRES_DB: datarescue
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U datarescue -d datarescue"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [backend]
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["6379:6379"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [backend]
+
+  # One-shot: wait for Postgres, apply migrations, seed demo data (idempotent).
+  migrate:
+    <<: *backend
+    command: ["sh", "-c", "alembic upgrade head && python scripts/seed.py"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *backend
+    ports: ["8000:8000"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [backend, frontend]
+
+  worker:
+    <<: *backend
+    command: ["python", "-m", "app.workers.main", "worker"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  scheduler:
+    <<: *backend
+    command: ["python", "-m", "app.workers.main", "scheduler"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  frontend:
+    build:
+      context: frontend
+    ports: ["5173:80"]
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [frontend]
+
+  # --- optional profiles ---------------------------------------------------
+
+  tests:
+    profiles: ["test"]
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: dev
+    image: datarescue-backend:dev
+    environment:
+      <<: *backend-env
+      DATABASE_URL: postgresql+psycopg://datarescue:datarescue@postgres:5432/datarescue_test
+      ENVIRONMENT: test
+      DATA_DIR: /tmp/datarescue-test
+    volumes:
+      - ./backend:/app
+      - ./scripts:/app/scripts
+      - ./optional:/app/optional
+      - ./data:/repo-data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [backend]
+
+  dbt:
+    profiles: ["analytics"]
+    build:
+      context: dbt
+    image: datarescue-dbt:local
+    working_dir: /usr/app
+    environment:
+      DBT_PROFILES_DIR: /usr/app/profiles
+      DBT_HOST: postgres
+      DBT_USER: datarescue
+      DBT_PASSWORD: datarescue
+      DBT_DBNAME: datarescue
+    volumes:
+      - ./dbt:/usr/app
+      - ./dbt/profiles.example.yml:/usr/app/profiles/profiles.yml:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [backend]
+
+  redpanda:
+    profiles: ["optional-streaming"]
+    image: redpandadata/redpanda:v24.2.7
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp=1
+      - --memory=512M
+      - --reserve-memory=0M
+      - --kafka-addr=PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr=PLAINTEXT://redpanda:9092
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -q 'Healthy:.*true'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [backend]
+
+  stream-consumer:
+    profiles: ["optional-streaming"]
+    <<: *backend
+    build:
+      context: .
+      dockerfile: optional/kafka/Dockerfile
+    image: datarescue-stream:local
+    command: ["python", "-m", "optional.kafka.consumer"]
+    environment:
+      <<: *backend-env
+      KAFKA_BOOTSTRAP: redpanda:9092
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  airflow:
+    profiles: ["optional-orchestration"]
+    image: apache/airflow:2.10.2-python3.12
+    command: ["standalone"]
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      DATARESCUE_API: http://api:8000/api/v1
+      # dbt for the refresh_dbt task; installed at container start (dev convenience only).
+      _PIP_ADDITIONAL_REQUIREMENTS: "dbt-core~=1.8.0 dbt-postgres==1.8.2"
+      DBT_HOST: postgres
+    ports: ["8080:8080"]
+    volumes:
+      - ./optional/airflow/dags:/opt/airflow/dags:ro
+      - ./dbt:/opt/dbt
+      - ./dbt/profiles.example.yml:/opt/dbt/profiles/profiles.yml:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [backend]
+
+volumes:
+  pgdata:
+  redisdata:
+  appdata:
+
+networks:
+  backend:
+  frontend:

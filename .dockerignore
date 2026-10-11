@@ -1,0 +1,17 @@
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+.env
+.git
+**/node_modules
+frontend/dist
+data/generated
+data/uploads
+data/benchmarks
+dbt/target
+dbt/logs

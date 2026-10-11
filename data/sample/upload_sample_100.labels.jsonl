@@ -1,0 +1,15 @@
+{"row": 5, "event_id": "0f88080b-10a3-46b2-aa05-e11ab2715945", "fault": "currency_invalid", "expected": "quarantined"}
+{"row": 7, "event_id": "18f135d2-5f55-4203-b018-50c5a38fd547", "fault": "duplicate_identical", "expected": "skipped"}
+{"row": 8, "event_id": "72e6cc3a-babc-4d20-97ee-05cde00902c7", "fault": "duplicate_conflict", "expected": "quarantined"}
+{"row": 10, "event_id": "f341e07a-83f7-4f16-9bf4-a8b2b0c4312d", "fault": "currency_invalid", "expected": "quarantined"}
+{"row": 12, "event_id": "26b94c7f-9118-4b16-800f-49c81a358ca0", "fault": "impossible_timestamp", "expected": "quarantined"}
+{"row": 13, "event_id": "9474031b-7f26-444b-9828-9fcd59a54a7b", "fault": "duplicate_conflict", "expected": "quarantined"}
+{"row": 20, "event_id": "c8450070-6377-4407-a8e7-27891eb20109", "fault": "null_customer_id", "expected": "quarantined"}
+{"row": 28, "event_id": "9bca3cb7-2ee0-489d-86c9-1b9270ac06ac", "fault": "unexpected_field", "expected": "quarantined"}
+{"row": 42, "event_id": "e0f26deb-68ae-557f-bb01-9a7df8c44123", "fault": "corrupted_payload", "expected": "quarantined"}
+{"row": 47, "event_id": "aba8b9b3-8185-497c-9edb-9109618177ff", "fault": "unknown_status", "expected": "quarantined"}
+{"row": 51, "event_id": "15a0a8ae-3b99-4870-a132-0b9d4de2f8ad", "fault": "currency_lowercase", "expected": "quarantined"}
+{"row": 65, "event_id": "a9547109-ba69-57a7-9985-8412803d3dcf", "fault": "corrupted_payload", "expected": "quarantined"}
+{"row": 69, "event_id": "26e87555-5790-482e-81d3-fcff2a3af4d4", "fault": "duplicate_identical", "expected": "skipped"}
+{"row": 75, "event_id": "8c3ba859-23bc-4152-ad6b-987a73309b95", "fault": "late_event", "expected": "accepted_late"}
+{"row": 84, "event_id": "a5acd341-aca9-4fd0-a285-6ec67f914286", "fault": "negative_amount", "expected": "quarantined"}

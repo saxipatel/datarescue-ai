@@ -1,0 +1,14 @@
+# Mounted as ~/.dbt/profiles.yml by the `dbt` compose service. All values come from the
+# environment, so this file holds no credentials.
+datarescue:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_HOST', 'localhost') }}"
+      port: "{{ env_var('DBT_PORT', '5432') | int }}"
+      user: "{{ env_var('DBT_USER', 'datarescue') }}"
+      password: "{{ env_var('DBT_PASSWORD', 'datarescue') }}"
+      dbname: "{{ env_var('DBT_DBNAME', 'datarescue') }}"
+      schema: analytics
+      threads: 4

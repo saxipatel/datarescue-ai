@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: mart_daily_revenue
+    description: >
+      Settled revenue per UTC day and currency (dashboard_revenue). REFUNDED is reported
+      separately, not netted. FAILED and PENDING are excluded.
+    tests:
+      - dbt_utils_free_unique_combination:
+          columns: [revenue_date, currency]
+    columns:
+      - name: settled_amount
+        tests: [not_null]
+      - name: currency
+        tests:
+          - accepted_values:
+              values: "{{ var('allowed_currencies') }}"
+  - name: mart_merchant_settlements
+    description: Per-merchant settled totals per currency (dashboard_settlement).
+    tests:
+      - dbt_utils_free_unique_combination:
+          columns: [merchant_id, currency]
+    columns:
+      - name: merchant_id
+        tests: [not_null]

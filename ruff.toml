@@ -1,0 +1,2 @@
+# Lint scripts/ and optional/ with the backend's rules (backend/pyproject.toml).
+extend = "backend/pyproject.toml"

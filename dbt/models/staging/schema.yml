@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_accepted_transactions
+    description: Accepted transaction events with source name and UTC event date.
+    columns:
+      - name: event_id
+        tests: [unique, not_null]
+      - name: event_date
+        tests: [not_null]
