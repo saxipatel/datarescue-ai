@@ -5,24 +5,52 @@
 ![PostgreSQL 16](https://img.shields.io/badge/postgresql-16-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
-DataRescue is a data reliability control plane for batch transaction pipelines. It:
+**A data reliability and recovery platform for batch transaction pipelines.**
 
-- validates incoming events against a contract;
-- quarantines bad rows without losing them;
-- opens an incident when a quality rule breaches its threshold;
-- explains the likely cause from evidence;
-- traces the downstream datasets and dashboards at risk;
-- runs bounded, human-approved, idempotent repairs, which are verified before an incident closes.
+Data pipelines do not always fail cleanly. Duplicate events, malformed records, missing batches, and upstream schema changes can silently corrupt downstream analytics. DataRescue detects these problems, preserves the evidence, and provides a controlled path to recovery without double-counting transactions.
 
-All data is synthetic. This is a portfolio and learning project, not a certified financial
-system.
+Built as an end-to-end data engineering project, DataRescue combines ingestion, contract validation, quarantine, incident diagnosis, dataset-level lineage, and **human-approved, idempotent repair** in one locally runnable application.
+
+> **Project scope:** All records are synthetic. DataRescue is a portfolio and learning system, not a production-certified financial or compliance platform.
+
+## At a glance
+
+| Area | What DataRescue demonstrates |
+|---|---|
+| **Reliable ingestion** | CSV/JSONL ingestion, streaming chunks, durable checkpoints, database-backed deduplication |
+| **Data quality** | Contract validation, quarantined records, batch-level quality checks, incident creation |
+| **Safe recovery** | Dry runs, steward approval, idempotency keys, database locks, post-repair reconciliation |
+| **Observability** | Evidence-based diagnosis, incident timelines, dataset-level lineage, append-only audit events |
+| **Engineering practices** | Docker Compose, CI, backend and frontend tests, dbt models, documented tradeoffs |
+
+## Results from documented tests
+
+These are **reported results from the specified local runs and GitHub Actions run**, not general performance or production reliability guarantees.
+
+| Test | Documented result |
+|---|---|
+| Duplicate-event scenario | **1,000** rows received; **900 accepted**, **100 identical duplicates skipped**, **0 quarantined** |
+| Failure Lab evaluation for that scenario | **0 false positives / 0 false negatives** against generated ground truth |
+| Crash-and-retry recovery demonstration | **1,431 rows predicted = 1,431 rows written**; verification passed after a retry |
+| Backend CI run (`6beb3ce`) | **172 tests passed**, **89% line coverage** |
+| dbt CI run | **23 of 23** model/test checks passed |
+| Single-machine 100k-row benchmark | **6,057 ingested rows/s** over **16.5 seconds** in the documented environment |
+
+See [Verified results](#verified-results) and [Benchmarks](#benchmarks) for the test conditions, commit references, and important caveats. CI and benchmarks should be rerun to establish the status of the latest commit.
+
+## Dashboard preview
 
 ![DataRescue overview dashboard: open incidents, rows accepted, quarantine rate, mean time to detect, recovery success, pipeline health and throughput by outcome](docs/images/overview-dashboard.png)
 
-<sub>Overview dashboard, captured from a locally running instance at 1440×900. Every screenshot in this README comes from that same instance and its existing data.</sub>
+<sub>Overview dashboard captured from a locally running instance at 1440×900. Screenshots in the walkthrough were captured from that instance with synthetic data.</sub>
+
+**Explore the project:** [Architecture](#architecture) · [Screenshots and workflow](#visual-walkthrough) · [Run locally](#quick-start) · [Testing evidence](#verified-results) · [Engineering decisions](#engineering-decisions)
 
 ## Contents
 
+- [At a glance](#at-a-glance)
+- [Results from documented tests](#results-from-documented-tests)
+- [Dashboard preview](#dashboard-preview)
 - [Why](#why)
 - [How it works](#how-it-works)
 - [Architecture](#architecture)
@@ -38,6 +66,7 @@ system.
 - [Repository layout](#repository-layout)
 - [Known limitations](#known-limitations)
 - [Future work](#future-work)
+- [License](#license)
 
 ## Why
 
