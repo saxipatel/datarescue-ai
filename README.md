@@ -333,7 +333,7 @@ The integration suite covers:
 - HTTP behaviour: auth failures, 403, 404, 409, 422, 503 when Redis is unreachable, and
   CSV formula neutralization.
 
-The acceptance matrix is in [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+The acceptance matrix is in [IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md).
 
 ## Quick start
 

@@ -110,9 +110,9 @@ key with an advisory lock. Verification checks must pass before the incident res
 
 More detail:
 
-- [README.md](README.md): diagrams and screenshots;
-- [docs/architecture.md](docs/architecture.md);
-- [docs/decisions/](docs/decisions/): ADRs 0001 to 0005;
+- [README.md](../README.md): diagrams and screenshots;
+- [docs/architecture.md](architecture.md);
+- [docs/decisions/](decisions/): ADRs 0001 to 0005;
 - [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md): the acceptance matrix.
 
 ## Setup and everyday commands
@@ -187,7 +187,7 @@ inside the api container, so no login was recorded.
   from a Finder or iCloud copy. They aren't tracked and don't affect CI. `npm ci` in
   `frontend/` would clean them up.
 - **`.env`** still has the development placeholder `JWT_SECRET`. That's fine locally, but it
-  must be replaced before any shared deployment (see [docs/security.md](docs/security.md)).
+  must be replaced before any shared deployment (see [docs/security.md](security.md)).
 - **Feature limits** (by design, documented in the README):
   - batch-level detection;
   - dataset-level lineage;
